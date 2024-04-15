@@ -58,7 +58,7 @@ export class GetPricesV1 {
         product: sProduct.product,
       };
 
-      return await this.historyPriceRepository.create(newHistoryPrice);
+      return await this.historyPriceRepository.savePrice(newHistoryPrice);
     });
   }
 

@@ -11,6 +11,7 @@ export class PuppeteerService {
 
   async scrap(data, fnEvaluate): Promise<ProductScrapDtoV1> {
     const { url, id, source } = data;
+
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
