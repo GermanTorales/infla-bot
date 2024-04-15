@@ -20,4 +20,17 @@ export class HistoryPriceRepository implements IHistoryPriceRepository {
 
     return await this.historyPriceModel.find({ where: { created_at: Between(start, end), product } });
   }
+
+  async savePrice(data: IHistoryPriceEntity): Promise<IHistoryPriceEntity> {
+    const start = dayjs().startOf("day").toDate();
+    const end = dayjs().endOf("day").toDate();
+
+    const existingPrice = await this.historyPriceModel.findOne({
+      where: { product: data.product, date: Between(start, end), source: data.source },
+    });
+
+    if (!existingPrice) return await this.create(data);
+
+    return existingPrice;
+  }
 }
