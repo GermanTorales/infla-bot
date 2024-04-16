@@ -16,9 +16,7 @@ export class ProductController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createProduct(@Body() data: CreateProductDtoV1) {
-    await this.createUseCase.exec(data);
-
-    return {};
+    return await this.createUseCase.exec(data);
   }
 
   @Get()

@@ -2,6 +2,7 @@ import * as puppeteer from "puppeteer";
 import { Injectable, Logger } from "@nestjs/common";
 
 import { ProductScrapDtoV1 } from "src/application/dtos";
+import { cleanPrice, cleanText } from "src/application/utils";
 
 @Injectable()
 export class PuppeteerService {
@@ -11,16 +12,25 @@ export class PuppeteerService {
 
   async scrap(data, fnEvaluate): Promise<ProductScrapDtoV1> {
     const { url, id, source } = data;
+    let browser;
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+    try {
+      browser = await puppeteer.launch();
+      const page = await browser.newPage();
 
-    await page.goto(url, { timeout: 60000 });
+      await page.goto(url, { timeout: 120000, waitUntil: "domcontentloaded" });
 
-    const productInfo = await page.evaluate(fnEvaluate);
+      const productInfo = await page.evaluate(fnEvaluate);
 
-    await browser.close();
+      this.logger.log(`Scraped: ${cleanText(productInfo.name)} - ${cleanPrice(productInfo.price)}`);
 
-    return { ...productInfo, id, source };
+      return { ...productInfo, id, source };
+    } catch (error) {
+      this.logger.error(`Error scraping ${source} ${id}: ${error}`);
+
+      return null;
+    } finally {
+      if (browser) await browser.close();
+    }
   }
 }

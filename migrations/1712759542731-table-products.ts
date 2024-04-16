@@ -32,12 +32,6 @@ export class TableProducts1712759542731 implements MigrationInterface {
             default: null,
           },
           {
-            name: "last_price",
-            type: "float",
-            isNullable: true,
-            default: null,
-          },
-          {
             name: "status",
             type: "enum",
             enum: ["active", "inactive", "deleted"],

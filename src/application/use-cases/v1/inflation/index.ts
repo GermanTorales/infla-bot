@@ -1,2 +1,2 @@
 export * from "./general.use-case";
-export * from "./current-inflation.use-case";
+export * from "./calculate-inflation.use-case";

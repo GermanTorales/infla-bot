@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Between, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 
+import { INFLATION_PERIOD } from "src/application/enums";
 import { IHistoryPriceRepository } from "src/domain/repositories";
 import { HistoryPriceEntity, IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
 
@@ -32,5 +33,26 @@ export class HistoryPriceRepository implements IHistoryPriceRepository {
     if (!existingPrice) return await this.create(data);
 
     return existingPrice;
+  }
+
+  async findPricesByDate(type: INFLATION_PERIOD): Promise<IHistoryPriceEntity[]> {
+    let start: Date;
+    let end: Date;
+
+    if (type === INFLATION_PERIOD.TODAY) {
+      start = dayjs().startOf("day").toDate();
+      end = dayjs().endOf("day").toDate();
+    } else if (type === INFLATION_PERIOD.YESTERDAY) {
+      start = dayjs().subtract(1, "day").startOf("day").toDate();
+      end = dayjs().subtract(1, "day").endOf("day").toDate();
+    } else if (type === INFLATION_PERIOD.LAST_WEEK) {
+      start = dayjs().subtract(1, "week").startOf("day").toDate();
+      end = dayjs().subtract(1, "week").endOf("day").toDate();
+    } else if (type === INFLATION_PERIOD.LAST_MONTH) {
+      start = dayjs().subtract(1, "month").startOf("day").toDate();
+      end = dayjs().subtract(1, "month").endOf("day").toDate();
+    }
+
+    return await this.historyPriceModel.find({ where: { created_at: Between(start, end) }, relations: ["product"] });
   }
 }
