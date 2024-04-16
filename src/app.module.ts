@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_INTERCEPTOR } from "@nestjs/core";
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { NormalizeResponseInterceptor } from "./infrastructure/utils";
 import { InflationModule, ProductModule } from "src/infrastructure/modules";
@@ -13,6 +14,7 @@ import { PuppeteerModule, TypeOrmConfigModule } from "src/infrastructure/depende
       cache: true,
       expandVariables: true,
     }),
+    EventEmitterModule.forRoot(),
     TypeOrmConfigModule,
     PuppeteerModule,
     InflationModule,

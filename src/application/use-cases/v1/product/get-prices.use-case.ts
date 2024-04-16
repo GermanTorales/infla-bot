@@ -1,5 +1,5 @@
 import { map } from "async";
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 
 import { PORT } from "src/application/enums";
 import { cleanPrice, cleanText } from "src/application/utils";
@@ -10,6 +10,8 @@ import { EProductSource, IHistoryPriceEntity, IProductEntity } from "src/domain/
 
 @Injectable()
 export class GetPricesV1 {
+  private logger: Logger = new Logger(GetPricesV1.name);
+
   constructor(
     @Inject(PORT.Product) private readonly productRepository: IProductRepository,
     @Inject(PORT.HistoryPrice) private readonly historyPriceRepository: IHistoryPriceRepository,
@@ -31,22 +33,24 @@ export class GetPricesV1 {
       return await this.puppeteerService.scrap({ id: product.id, url, source }, evaluateBySource[source]);
     });
 
-    const dataClened = dataScraped.map((d: ProductScrapDtoV1): SourceProductDtoV1 => {
-      const formatedData = Object.entries(d).reduce((acc, [key, value]) => {
-        if (key === "price") acc[key] = cleanPrice(value);
-        else acc[key] = cleanText(value);
+    const dataClened = dataScraped
+      .filter(e => e)
+      .map((d: ProductScrapDtoV1): SourceProductDtoV1 => {
+        const formatedData = Object.entries(d).reduce((acc, [key, value]) => {
+          if (key === "price") acc[key] = cleanPrice(value);
+          else acc[key] = cleanText(value);
 
-        return acc;
-      }, {} as ProductScrapDtoV1);
+          return acc;
+        }, {} as ProductScrapDtoV1);
 
-      const product: IProductEntity = productsList.find(p => p.id === d.id);
+        const product: IProductEntity = productsList.find(p => p.id === d.id);
 
-      return { product, source: d.source, price: formatedData.price, stringPrice: formatedData.stringPrice };
-    });
+        return { product, source: d.source, price: formatedData.price, stringPrice: formatedData.stringPrice };
+      });
 
     await this._saveInDb(dataClened);
 
-    return dataClened.map(p => ({ source: p.source, price: p.price, name: p.product.name, stringPrice: p.stringPrice }));
+    return dataClened.map(p => ({ source: p.source, price: p.price, name: p.product.name, stringPrice: p.stringPrice, id: p.product.id }));
   }
 
   private async _saveInDb(sourceProducts: SourceProductDtoV1[]) {
@@ -71,7 +75,10 @@ export class GetPricesV1 {
 
   carrefourScrap() {
     const name = document.querySelector(".vtex-store-components-3-x-productBrand")?.textContent;
-    const price = document.querySelector(".valtech-carrefourar-product-price-0-x-listPrice")?.textContent;
+    const listPrice = document.querySelector(".valtech-carrefourar-product-price-0-x-listPrice")?.textContent;
+    const sellingPrice = document.querySelector(".valtech-carrefourar-product-price-0-x-sellingPrice")?.textContent;
+
+    const price = listPrice || sellingPrice || "$0";
 
     return { name, price, stringPrice: price };
   }

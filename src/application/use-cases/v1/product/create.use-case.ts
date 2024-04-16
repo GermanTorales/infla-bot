@@ -20,6 +20,13 @@ export class CreateProductV1 {
       updated_at: new Date(),
     };
 
-    return await this.productRepository.create(newProduct);
+    await this.productRepository.create(newProduct);
+
+    return {
+      name: data.name,
+      coto: Boolean(data.coto_url),
+      carrefour: Boolean(data.carrefour_url),
+      dia: Boolean(data.dia_url),
+    };
   }
 }
