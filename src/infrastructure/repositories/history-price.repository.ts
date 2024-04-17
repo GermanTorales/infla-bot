@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { INFLATION_PERIOD } from "src/application/enums";
 import { IHistoryPriceRepository } from "src/domain/repositories";
-import { HistoryPriceEntity, IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
+import { EProductSource, HistoryPriceEntity, IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
 
 @Injectable()
 export class HistoryPriceRepository implements IHistoryPriceRepository {
@@ -35,7 +35,7 @@ export class HistoryPriceRepository implements IHistoryPriceRepository {
     return existingPrice;
   }
 
-  async findPricesByDate(type: INFLATION_PERIOD): Promise<IHistoryPriceEntity[]> {
+  async findPricesByDate(type: INFLATION_PERIOD, source?: EProductSource): Promise<IHistoryPriceEntity[]> {
     let start: Date;
     let end: Date;
 
@@ -53,6 +53,10 @@ export class HistoryPriceRepository implements IHistoryPriceRepository {
       end = dayjs().subtract(1, "month").endOf("day").toDate();
     }
 
-    return await this.historyPriceModel.find({ where: { created_at: Between(start, end) }, relations: ["product"] });
+    let query = { created_at: Between(start, end) };
+
+    if (source) query["source"] = source;
+
+    return await this.historyPriceModel.find({ where: query, relations: ["product"] });
   }
 }

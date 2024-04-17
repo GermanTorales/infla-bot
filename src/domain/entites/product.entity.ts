@@ -9,7 +9,6 @@ export interface IProductEntity {
   coto_url?: string;
   carrefour_url?: string;
   dia_url?: string;
-  last_price: number;
   created_at?: Date;
   updated_at: Date;
   prices?: IHistoryPriceEntity[];
@@ -42,9 +41,6 @@ export class ProductEntity extends BaseModel implements IProductEntity {
 
   @Column({ type: "varchar", nullable: true, default: null })
   dia_url?: string;
-
-  @Column({ type: "float", nullable: true, default: null })
-  last_price: number;
 
   @OneToMany(() => HistoryPriceEntity, historyEntity => historyEntity.product)
   prices?: IHistoryPriceEntity[];
