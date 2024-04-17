@@ -15,7 +15,6 @@ export class CreateProductV1 {
       coto_url: data.coto_url,
       carrefour_url: data.carrefour_url,
       dia_url: data.dia_url,
-      last_price: null,
       status: EProductStatus.ACTIVE,
       updated_at: new Date(),
     };

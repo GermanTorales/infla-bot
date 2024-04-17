@@ -14,6 +14,7 @@ import { HistoryPriceEntity, ProductEntity } from "src/domain/entites";
   providers: [
     UseCases.GeneralV1,
     UseCases.CalculateInflationV1,
+    UseCases.DailySourceInflationV1,
     PuppeteerService,
     { provide: PORT.Product, useClass: Repositories.ProductRepository },
     { provide: PORT.HistoryPrice, useClass: Repositories.HistoryPriceRepository },
