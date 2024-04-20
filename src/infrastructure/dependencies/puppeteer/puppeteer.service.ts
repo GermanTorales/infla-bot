@@ -1,36 +1,57 @@
 import * as puppeteer from "puppeteer";
 import { Injectable, Logger } from "@nestjs/common";
 
-import { ProductScrapDtoV1 } from "src/application/dtos";
+import { EPriceSource, EProductSource } from "src/domain/entites";
 import { cleanPrice, cleanText } from "src/application/utils";
+import { DataScrapedDtoV1, ProductScrapDtoV1 } from "src/application/dtos";
 
 @Injectable()
-export class PuppeteerService {
-  private logger: Logger = new Logger(PuppeteerService.name);
+export class Puppeteer {
+  private browser: puppeteer.Browser;
+  private logger: Logger = new Logger(Puppeteer.name);
 
   constructor() {}
 
-  async scrap(data, fnEvaluate): Promise<ProductScrapDtoV1> {
+  async initBrowser() {
+    this.browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      headless: true,
+    });
+  }
+
+  async scrap(data: { url: string; id: string; source: EProductSource }, fnEvaluate): Promise<ProductScrapDtoV1> {
     const { url, id, source } = data;
-    let browser;
+    let page;
 
     try {
-      browser = await puppeteer.launch();
-      const page = await browser.newPage();
+      page = await this.browser.newPage();
 
-      await page.goto(url, { timeout: 120000, waitUntil: "domcontentloaded" });
+      await page.goto(url, { timeout: 60000, waitUntil: "networkidle2" });
 
-      const productInfo = await page.evaluate(fnEvaluate);
+      const productInfo: DataScrapedDtoV1 = await page.evaluate(fnEvaluate);
 
-      this.logger.log(`Scraped: ${cleanText(productInfo.name)} - ${cleanPrice(productInfo.price)}`);
+      const client = await page.target().createCDPSession();
+      await client.send("Network.clearBrowserCookies");
+      await client.send("Network.clearBrowserCache");
 
-      return { ...productInfo, id, source };
+      return {
+        id,
+        name: cleanText(productInfo.name),
+        price: cleanPrice(productInfo.price),
+        stringPrice: cleanText(productInfo.price),
+        source: EPriceSource[source.toUpperCase()],
+        image: productInfo.image,
+      };
     } catch (error) {
       this.logger.error(`Error scraping ${source} ${id}: ${error}`);
 
       return null;
     } finally {
-      if (browser) await browser.close();
+      if (page) await page.close();
     }
+  }
+
+  async closeBrowser() {
+    await this.browser.close();
   }
 }

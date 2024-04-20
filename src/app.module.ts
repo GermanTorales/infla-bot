@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_INTERCEPTOR } from "@nestjs/core";
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventEmitterModule } from "@nestjs/event-emitter";
 
+import { TypeOrmConfigModule } from "src/infrastructure/dependencies";
 import { NormalizeResponseInterceptor } from "./infrastructure/utils";
-import { InflationModule, ProductModule } from "src/infrastructure/modules";
-import { PuppeteerModule, TypeOrmConfigModule } from "src/infrastructure/dependencies";
+import * as Modules from "src/infrastructure/modules";
 
 @Module({
   imports: [
@@ -16,9 +16,9 @@ import { PuppeteerModule, TypeOrmConfigModule } from "src/infrastructure/depende
     }),
     EventEmitterModule.forRoot(),
     TypeOrmConfigModule,
-    PuppeteerModule,
-    InflationModule,
-    ProductModule,
+    Modules.InflationModule,
+    Modules.ProductModule,
+    Modules.ChartModule,
   ],
   controllers: [],
   providers: [

@@ -53,4 +53,8 @@ export class ProductRepository implements IProductRepository {
 
     return this.findOne(query);
   }
+
+  async findAllWithPrices(): Promise<IProductEntity[]> {
+    return await this.productModel.find({ relations: ["prices"] });
+  }
 }

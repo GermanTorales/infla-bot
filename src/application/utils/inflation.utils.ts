@@ -2,6 +2,8 @@ import { InflationCalculatedDtoV1 } from "src/application/dtos";
 import { IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
 
 export const calculateInflation = (products: IProductEntity[], lastPrices: IHistoryPriceEntity[], currentPrices: IHistoryPriceEntity[]) => {
+  if (lastPrices.length === 0 || currentPrices.length === 0) return [];
+
   const inflationByProducts: InflationCalculatedDtoV1[] = products
     .map(product => {
       const lastPrice = lastPrices.find(price => price.product.id === product.id);

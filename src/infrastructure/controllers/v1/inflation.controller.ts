@@ -11,7 +11,7 @@ export class InflationControllerV1 {
     private readonly dailySourceInflationUseCase: UseCases.DailySourceInflationV1,
   ) {}
 
-  @Get("general")
+  @Get("")
   @HttpCode(HttpStatus.OK)
   async getGeneral() {
     return await this.generalUseCase.exec();
