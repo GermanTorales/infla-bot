@@ -17,6 +17,7 @@ export class CreateProductV1 {
       dia_url: data.dia_url,
       status: EProductStatus.ACTIVE,
       updated_at: new Date(),
+      image: null,
     };
 
     await this.productRepository.create(newProduct);

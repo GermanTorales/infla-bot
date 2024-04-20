@@ -2,21 +2,23 @@ import { map } from "async";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 
 import { PORT } from "src/application/enums";
-import { cleanPrice, cleanText } from "src/application/utils";
-import { PuppeteerService } from "src/infrastructure/dependencies";
-import { ProductScrapDtoV1, SourceProductDtoV1 } from "src/application/dtos";
+import { Puppeteer } from "src/infrastructure/dependencies";
+import { DataScrapedDtoV1, ProductScrapDtoV1, SourceProductDtoV1 } from "src/application/dtos";
 import { IHistoryPriceRepository, IProductRepository } from "src/domain/repositories";
 import { EProductSource, IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
+import * as dayjs from "dayjs";
 
 @Injectable()
 export class GetPricesV1 {
+  private puppeteer: Puppeteer;
   private logger: Logger = new Logger(GetPricesV1.name);
 
   constructor(
     @Inject(PORT.Product) private readonly productRepository: IProductRepository,
     @Inject(PORT.HistoryPrice) private readonly historyPriceRepository: IHistoryPriceRepository,
-    private readonly puppeteerService: PuppeteerService,
-  ) {}
+  ) {
+    this.puppeteer = new Puppeteer();
+  }
 
   async exec(source: EProductSource) {
     const productsList: IProductEntity[] = await this.productRepository.findBySource(source);
@@ -27,66 +29,84 @@ export class GetPricesV1 {
       dia: this.diaScrap,
     };
 
-    const dataScraped: ProductScrapDtoV1[] = await map(productsList, async (product: IProductEntity) => {
+    let dataScraped: ProductScrapDtoV1[] = [];
+
+    await this.puppeteer.initBrowser();
+
+    const startTime = new Date().getTime();
+
+    for (const product of productsList) {
       const url: string = product[`${source}_url`];
+      const scrapedData = await this.puppeteer.scrap({ id: product.id, url, source }, evaluateBySource[source]);
 
-      return await this.puppeteerService.scrap({ id: product.id, url, source }, evaluateBySource[source]);
-    });
+      if (scrapedData) dataScraped.push(scrapedData);
+    }
 
-    const dataClened = dataScraped
-      .filter(e => e)
-      .map((d: ProductScrapDtoV1): SourceProductDtoV1 => {
-        const formatedData = Object.entries(d).reduce((acc, [key, value]) => {
-          if (key === "price") acc[key] = cleanPrice(value);
-          else acc[key] = cleanText(value);
+    const totalTime = dayjs().diff(startTime, "minute");
 
-          return acc;
-        }, {} as ProductScrapDtoV1);
+    this.logger.log(`Scraped ${dataScraped.length} products in ${totalTime}m`);
 
-        const product: IProductEntity = productsList.find(p => p.id === d.id);
+    await this.puppeteer.closeBrowser();
+    await this._saveInDb(dataScraped, productsList);
+    await this._checkImage(dataScraped, productsList);
 
-        return { product, source: d.source, price: formatedData.price, stringPrice: formatedData.stringPrice };
-      });
-
-    await this._saveInDb(dataClened);
-
-    return dataClened.map(p => ({ source: p.source, price: p.price, name: p.product.name, stringPrice: p.stringPrice, id: p.product.id }));
+    return dataScraped;
   }
 
-  private async _saveInDb(sourceProducts: SourceProductDtoV1[]) {
-    await map(sourceProducts, async (sProduct: SourceProductDtoV1) => {
+  private async _saveInDb(sourceProducts: ProductScrapDtoV1[], products: IProductEntity[]): Promise<IHistoryPriceEntity[]> {
+    return await map(sourceProducts, async (sProduct: SourceProductDtoV1) => {
+      const product: IProductEntity = products.find(p => p.id === sProduct.id);
+
       const newHistoryPrice: IHistoryPriceEntity = {
         price: sProduct.price,
         date: new Date(),
         source: sProduct.source,
-        product: sProduct.product,
+        product,
       };
 
       return await this.historyPriceRepository.savePrice(newHistoryPrice);
     });
   }
 
-  cotoScrap() {
-    const name = document.querySelector(".product_page")?.textContent;
-    const price = document.querySelector(".atg_store_newPrice")?.textContent;
+  private async _checkImage(dataScraped: ProductScrapDtoV1[], products: IProductEntity[]) {
+    await map(dataScraped, async (data: ProductScrapDtoV1) => {
+      const product: IProductEntity = products.find(p => p.id === data.id);
 
-    return { name, price, stringPrice: price };
+      if (product?.image?.length) return;
+
+      product.image = product.image;
+
+      await this.productRepository.update(product.id, product);
+    });
   }
 
-  carrefourScrap() {
+  cotoScrap(): DataScrapedDtoV1 {
+    const name = document.querySelector(".product_page")?.textContent;
+    const regularPrice = document.querySelector(".price_regular_precio")?.textContent;
+    const onlyPrice = document.querySelector(".atg_store_newPrice")?.textContent;
+    const image = document.querySelector(".zoomImg")?.getAttribute("src");
+
+    const price = regularPrice || onlyPrice || "$0";
+
+    return { name, price, image };
+  }
+
+  carrefourScrap(): DataScrapedDtoV1 {
     const name = document.querySelector(".vtex-store-components-3-x-productBrand")?.textContent;
     const listPrice = document.querySelector(".valtech-carrefourar-product-price-0-x-listPrice")?.textContent;
     const sellingPrice = document.querySelector(".valtech-carrefourar-product-price-0-x-sellingPrice")?.textContent;
+    const image = document.querySelector(".vtex-store-components-3-x-productImageTag")?.getAttribute("src");
 
     const price = listPrice || sellingPrice || "$0";
 
-    return { name, price, stringPrice: price };
+    return { name, price, image };
   }
 
-  async diaScrap() {
+  diaScrap(): DataScrapedDtoV1 {
     const name = document.querySelector(".vtex-store-components-3-x-productBrand")?.textContent;
     const price = document.querySelector(".vtex-product-price-1-x-currencyContainer")?.textContent;
+    const image = document.querySelector(".vtex-store-components-3-x-productImageTag")?.getAttribute("src");
 
-    return { name, price, stringPrice: price };
+    return { name, price, image };
   }
 }

@@ -13,4 +13,5 @@ export interface IProductRepository {
   deleteBy: (filters: FindOptionsWhere<IProductEntity>) => Promise<void>;
   deleteOne: (id: string) => Promise<void>;
   findBySource: (source: EProductSource) => Promise<IProductEntity[]>;
+  findAllWithPrices: () => Promise<IProductEntity[]>;
 }

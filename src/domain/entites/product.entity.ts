@@ -3,6 +3,12 @@ import { Column, Entity, OneToMany } from "typeorm";
 import BaseModel from "./base.entity";
 import { HistoryPriceEntity, IHistoryPriceEntity } from "./history-prices.entity";
 
+export interface IProductPrice {
+  coto: IHistoryPriceEntity;
+  carrefour: number;
+  dia: number;
+}
+
 export interface IProductEntity {
   id?: string;
   name: string;
@@ -13,6 +19,7 @@ export interface IProductEntity {
   updated_at: Date;
   prices?: IHistoryPriceEntity[];
   status: EProductStatus;
+  image: string;
 }
 
 export enum EProductStatus {
@@ -47,4 +54,7 @@ export class ProductEntity extends BaseModel implements IProductEntity {
 
   @Column({ type: "enum", enum: EProductStatus, default: EProductStatus.ACTIVE })
   status: EProductStatus;
+
+  @Column({ type: "varchar", nullable: true, default: null })
+  image: string;
 }

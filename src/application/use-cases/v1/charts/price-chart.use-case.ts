@@ -1,28 +1,27 @@
 import { Inject, Injectable } from "@nestjs/common";
-
 import { PORT } from "src/application/enums";
-import { IProductEntity } from "src/domain/entites";
+import { IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
 import { IProductRepository } from "src/domain/repositories";
 
 @Injectable()
-export class GetProductV1 {
+export class PriceChartV1 {
   constructor(@Inject(PORT.Product) private readonly productRepository: IProductRepository) {}
 
   async exec(id: string) {
     const product: IProductEntity = await this.productRepository.findOneById(id);
 
-    product.prices = product.prices.sort((a, b) => b.date.getTime() - a.date.getTime());
+    const priceSorted = product.prices.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    const prices = product.prices.reduce((acc, price) => {
+    const pricesByDate = priceSorted.reduce((acc, price: IHistoryPriceEntity) => {
       const date = price.date.toISOString().split("T")[0];
 
-      if (!acc[date]) acc[date] = [];
+      if (!acc[date]) acc[date] = { name: date };
 
-      acc[date].push(price);
+      acc[date] = { ...acc[date], [price.source]: price.price };
 
       return acc;
     }, {});
 
-    return { ...product, prices };
+    return Object.values(pricesByDate);
   }
 }
