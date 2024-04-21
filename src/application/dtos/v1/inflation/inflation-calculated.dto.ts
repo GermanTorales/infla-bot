@@ -11,7 +11,7 @@ export class InflationCalculatedDtoV1 {
 export interface InflationsByPeriodDtoV1 {
   daily: string;
   weekly: string;
-  annualy: string;
+  monthly: string;
 }
 
 export interface InflationPricesDtoV1 {

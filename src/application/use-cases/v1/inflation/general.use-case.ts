@@ -3,8 +3,8 @@ import { Inject, Injectable } from "@nestjs/common";
 import { calculateInflation } from "src/application/utils";
 import { INFLATION_PERIOD, PORT } from "src/application/enums";
 import { IHistoryPriceRepository, IProductRepository } from "src/domain/repositories";
-import { InflationCalculatedDtoV1, InflationPricesDtoV1, InflationsByPeriodDtoV1 } from "src/application/dtos";
 import { EProductSource, IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
+import { InflationCalculatedDtoV1, InflationPricesDtoV1, InflationsByPeriodDtoV1 } from "src/application/dtos";
 
 @Injectable()
 export class GeneralV1 {
@@ -25,16 +25,16 @@ export class GeneralV1 {
     const products: IProductEntity[] = await this.productRepository.findBySource(source);
     const dailyPrices = await this._getPrices(source, INFLATION_PERIOD.YESTERDAY, INFLATION_PERIOD.TODAY);
     const weeklyPrices = await this._getPrices(source, INFLATION_PERIOD.LAST_WEEK, INFLATION_PERIOD.TODAY);
-    const annualyPrices = await this._getPrices(source, INFLATION_PERIOD.LAST_MONTH, INFLATION_PERIOD.TODAY);
+    const monthlyPrices = await this._getPrices(source, INFLATION_PERIOD.LAST_MONTH, INFLATION_PERIOD.TODAY);
 
     const dailyInflation: InflationCalculatedDtoV1[] = calculateInflation(products, dailyPrices.previous, dailyPrices.current);
     const weeklyInflation: InflationCalculatedDtoV1[] = calculateInflation(products, weeklyPrices.previous, weeklyPrices.current);
-    const annualyInflation: InflationCalculatedDtoV1[] = calculateInflation(products, annualyPrices.previous, annualyPrices.current);
+    const monthlyInflation: InflationCalculatedDtoV1[] = calculateInflation(products, monthlyPrices.previous, monthlyPrices.current);
 
     return {
       daily: this._getInflation(dailyInflation),
       weekly: this._getInflation(weeklyInflation),
-      annualy: this._getInflation(annualyInflation),
+      monthly: this._getInflation(monthlyInflation),
     };
   }
 
