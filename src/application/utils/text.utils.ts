@@ -3,7 +3,11 @@ export const cleanText = (txt: string): string => {
 };
 
 export const cleanPrice = (price: string): number => {
-  let cleanedPrice = price.replace(/[^0-9.,]/g, "");
+  /*
+  The first "replace" remove the percentage discount from the price.
+  The second "replace" removes all characters that are not numbers, dots or commas.
+  */
+  let cleanedPrice = price.replace(/(?:\s[0-9]+%)/g, "").replace(/[^0-9.,]/g, "");
 
   const hasDot = cleanedPrice.split("").filter(e => e === ".");
   const hasComma = cleanedPrice.split("").filter(e => e === ",");

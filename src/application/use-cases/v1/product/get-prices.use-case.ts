@@ -1,12 +1,12 @@
 import { map } from "async";
+import * as dayjs from "dayjs";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 
 import { PORT } from "src/application/enums";
 import { Puppeteer } from "src/infrastructure/dependencies";
-import { DataScrapedDtoV1, ProductScrapDtoV1, SourceProductDtoV1 } from "src/application/dtos";
 import { IHistoryPriceRepository, IProductRepository } from "src/domain/repositories";
 import { EProductSource, IHistoryPriceEntity, IProductEntity } from "src/domain/entites";
-import * as dayjs from "dayjs";
+import { DataScrapedDtoV1, ProductScrapDtoV1, SourceProductDtoV1 } from "src/application/dtos";
 
 @Injectable()
 export class GetPricesV1 {
@@ -74,7 +74,7 @@ export class GetPricesV1 {
 
       if (product?.image?.length) return;
 
-      product.image = product.image;
+      product.image = data.image;
 
       await this.productRepository.update(product.id, product);
     });
@@ -84,9 +84,10 @@ export class GetPricesV1 {
     const name = document.querySelector(".product_page")?.textContent;
     const regularPrice = document.querySelector(".price_regular_precio")?.textContent;
     const onlyPrice = document.querySelector(".atg_store_newPrice")?.textContent;
+    const offerPrice = document.querySelector(".price_discount_gde")?.textContent;
     const image = document.querySelector(".zoomImg")?.getAttribute("src");
 
-    const price = regularPrice || onlyPrice || "$0";
+    const price = offerPrice || onlyPrice || regularPrice || "$0";
 
     return { name, price, image };
   }
@@ -97,15 +98,18 @@ export class GetPricesV1 {
     const sellingPrice = document.querySelector(".valtech-carrefourar-product-price-0-x-sellingPrice")?.textContent;
     const image = document.querySelector(".vtex-store-components-3-x-productImageTag")?.getAttribute("src");
 
-    const price = listPrice || sellingPrice || "$0";
+    const price = sellingPrice || listPrice || "$0";
 
     return { name, price, image };
   }
 
   diaScrap(): DataScrapedDtoV1 {
     const name = document.querySelector(".vtex-store-components-3-x-productBrand")?.textContent;
-    const price = document.querySelector(".vtex-product-price-1-x-currencyContainer")?.textContent;
+    const listPrice = document.querySelector(".vtex-product-price-1-x-listPriceValue")?.textContent;
+    const offerPrice = document.querySelector(".vtex-product-price-1-x-sellingPriceValue")?.textContent;
     const image = document.querySelector(".vtex-store-components-3-x-productImageTag")?.getAttribute("src");
+
+    const price = offerPrice || listPrice || "$0";
 
     return { name, price, image };
   }
