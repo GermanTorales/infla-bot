@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from "@nestjs/common";
 
 import { CreateProductDtoV1, GetPricesParams } from "src/application/dtos";
-import { CreateProductV1, GetAllProductsV1, GetPricesV1, GetProductPricesV1, GetProductV1 } from "src/application/use-cases";
+import { CreateProductV1, GetAllProductsV1, GetPricesV1, GetProductPricesV1, GetProductV1, GetProductsCountV1 } from "src/application/use-cases";
 
 @Controller({ path: "products", version: "1" })
 export class ProductController {
@@ -11,6 +11,7 @@ export class ProductController {
     private readonly getPricesUseCase: GetPricesV1,
     private readonly getProductUseCase: GetProductV1,
     private readonly getProductPricesUseCase: GetProductPricesV1,
+    private readonly getProductsCountUseCase: GetProductsCountV1,
   ) {}
 
   @Post()
@@ -23,6 +24,12 @@ export class ProductController {
   @HttpCode(HttpStatus.OK)
   async getProducts() {
     return await this.getAllUseCase.exec();
+  }
+
+  @Get("count")
+  @HttpCode(HttpStatus.OK)
+  async getProductsCount() {
+    return await this.getProductsCountUseCase.exec();
   }
 
   @Get("current/prices/:productId")

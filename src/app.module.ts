@@ -1,11 +1,13 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_INTERCEPTOR } from "@nestjs/core";
+import { ScheduleModule } from "@nestjs/schedule";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 
+import * as Cronjobs from "./infrastructure/cron";
+import * as Modules from "src/infrastructure/modules";
 import { TypeOrmConfigModule } from "src/infrastructure/dependencies";
 import { NormalizeResponseInterceptor } from "./infrastructure/utils";
-import * as Modules from "src/infrastructure/modules";
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import * as Modules from "src/infrastructure/modules";
       cache: true,
       expandVariables: true,
     }),
+    ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     TypeOrmConfigModule,
     Modules.InflationModule,
@@ -22,6 +25,7 @@ import * as Modules from "src/infrastructure/modules";
   ],
   controllers: [],
   providers: [
+    Cronjobs.ScrapPricesCronV1,
     {
       provide: APP_INTERCEPTOR,
       useClass: NormalizeResponseInterceptor,

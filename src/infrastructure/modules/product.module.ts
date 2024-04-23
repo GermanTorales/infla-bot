@@ -18,10 +18,11 @@ import { HistoryPriceEntity, ProductEntity } from "src/domain/entites";
     UseCases.GetProductV1,
     UseCases.GetProductPricesV1,
     UseCases.CalculateInflationV1,
+    UseCases.GetProductsCountV1,
     Events.InflationEventListenerV1,
     { provide: PORT.Product, useClass: Repositories.ProductRepository },
     { provide: PORT.HistoryPrice, useClass: Repositories.HistoryPriceRepository },
   ],
-  exports: [],
+  exports: [UseCases.GetPricesV1],
 })
 export class ProductModule {}
