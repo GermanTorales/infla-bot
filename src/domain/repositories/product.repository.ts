@@ -14,4 +14,5 @@ export interface IProductRepository {
   deleteOne: (id: string) => Promise<void>;
   findBySource: (source: EProductSource) => Promise<IProductEntity[]>;
   findAllWithPrices: () => Promise<IProductEntity[]>;
+  count: () => Promise<number>;
 }
