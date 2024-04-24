@@ -47,8 +47,8 @@ jobs:
     steps:
       - name: Install Docker
         run: |
-          sudo apt-get update
-          sudo apt install docker.io
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
 
       - name: Deplot to DigitalOcean droplet via SSH action
         uses: appleboy/ssh-action@master
