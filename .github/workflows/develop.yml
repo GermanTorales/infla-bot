@@ -72,13 +72,13 @@ jobs:
             cd /home/app
 
             # Login to registry using password-stdin for security
-            # echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
+            echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
 
             # Stop running container
-            docker stop $IMAGE_NAME || true
+            # docker stop $IMAGE_NAME || true
 
             # Remove old container
-            docker rm $IMAGE_NAME || true
+            # docker rm $IMAGE_NAME || true
 
             # Run a new container from a new image
-            docker run -d --restart always --name $IMAGE_NAME $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
+            # docker run -d --restart always --name $IMAGE_NAME $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
