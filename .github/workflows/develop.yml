@@ -62,12 +62,13 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: ${{ secrets.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY }}
-          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA
+          envs: IMAGE_NAME,REGISTRY,{{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
           script: |
             cd /home/app
 
             # Login to registry using password-stdin for security
-            echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
+            # echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
+            docker login -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} registry.digitalocean.com
 
             # Stop running container
             docker stop $IMAGE_NAME || true
