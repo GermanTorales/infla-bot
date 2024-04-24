@@ -64,19 +64,6 @@ jobs:
           script: |
             cd /home/app
 
-            rm .env
-
-            echo "NODE_PORT=${{ secrets.NODE_PORT }}" >> .env
-            echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-            echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-            echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-            echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
-
-            # Print environment variables for debugging
-            echo "Registry: $REGISTRY"
-            echo "Image Name: $IMAGE_NAME"
-            echo "Tag: ${GITHUB_SHA::7}"
-
             # Login to registry using password-stdin for security
             echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
 
