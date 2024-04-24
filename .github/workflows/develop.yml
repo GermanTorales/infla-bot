@@ -1,4 +1,4 @@
-name: Deploy
+name: Development deploy
 
 on:
   push:
@@ -8,11 +8,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: akhileshns/heroku-deploy@v3.13.15 # This is the action
+      - name: Checkout develop
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "infla-bot"
-          heroku_email: "germantorales73@gmail.com"
-          usedocker: true
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Tag image
+        run: docker tag ${{secrets.DIGITALOCEAN_REGISTRY_NAME}}/infla-bot-dev \
+          registry.digitalocean.com/${{secrets.DIGITALOCEAN_REGISTRY_NAME}}/infla-bot-dev:${{github.event.inputs.version }}
+
+      - name: Push image to DO Container Registry
+        run: docker push registry.digitalocean.com/${{secrets.DIGITALOCEAN_REGISTRY_NAME}}/infla-bot-dev:${{github.event.inputs.version }}
