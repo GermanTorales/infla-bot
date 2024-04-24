@@ -72,8 +72,6 @@ jobs:
             cd /home/app
 
             # Login to registry using password-stdin for security
-            docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} -p ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
             # echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
 
             # Stop running container
