@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.DIGITALOCEAN_USERNAME}}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY}}
           passphrase: ""
-          envs: IMAGE_NAME,REGISTRY
+          envs: IMAGE_NAME,REGISTRY,${GITHUB_SHA}
           script: |
             cd /home/app
 
