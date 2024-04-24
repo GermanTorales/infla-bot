@@ -67,7 +67,7 @@ jobs:
             cd /home/app
 
             # Start pass init
-            echo "${{ secrets.PASS_INIT_KEY }}" | pass init --password-stdin
+            pass init "${{ secrets.PASS_INIT_KEY }}"
 
             # Login to registry using password-stdin for security
             echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
