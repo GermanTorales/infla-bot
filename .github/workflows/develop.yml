@@ -46,6 +46,13 @@ jobs:
 
     steps:
       - name: Deplot to DigitalOcean droplet via SSH action
+        env:
+          NODE_PORT: ${{secrets.NODE_PORT}}
+          MYSQL_HOST: ${{secrets.MYSQL_HOST}}
+          MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
+          MYSQL_USER: ${{secrets.MYSQL_USER}}
+          MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DIGITALOCEAN_HOST}}
