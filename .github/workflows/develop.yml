@@ -11,49 +11,9 @@ on:
         description: "Image version"
         required: true
 
-env:
-  REGISTRY: "${{secrets.DIGITALOCEAN_CONTAINER_REGISTRY}}"
-  IMAGE_NAME: "infla-bot-dev"
-
 jobs:
-  build_and_push:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout develop
-        uses: actions/checkout@v2
-
-      - name: Set environment variables
-        run: |
-          echo "NODE_PORT=${{ secrets.NODE_PORT }}" >> .env
-          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
-
-      - name: Build container image
-        run: docker build -t $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7} .
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN}}
-
-      - name: Login to DigitalOcean Container Registry
-        run: doctl registry login --expiry-seconds 600
-
-      - name: Remove all old images
-        run: if [ ! -z "$(doctl registry repository list | grep "$(echo $IMAGE_NAME)")" ]; then doctl registry repository delete-manifest $(echo $IMAGE_NAME) $(doctl registry repository list-tags $(echo $IMAGE_NAME) | grep -o "sha.*") --force; else echo "No repository"; fi
-
-      - name: Push image to DigitalOcean Container Registry
-        run: docker push $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
-
-      - name: Delete .env file
-        run: rm .env
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_push
 
     steps:
       - name: Install doctl
@@ -67,27 +27,9 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: ${{ secrets.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY }}
-          envs: IMAGE_NAME,REGISTRY,GITHUB_SHA
           script: |
-
-            export NVM_DIR=~/.nvm
-
-            source ~/.nvm/nvm.sh
-
             cd /home/app
 
             git clone git@github.com:GermanTorales/infla-bot.git
 
             echo 'Deployment to digital ocean finished'
-
-            # # Login to registry using password-stdin for security
-            # echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin registry.digitalocean.com
-
-            # # Stop running container
-            # docker stop $IMAGE_NAME || true
-
-            # # Remove old container
-            # docker rm $IMAGE_NAME || true
-
-            # # Run a new container from a new image
-            # docker run -d --restart always --name $IMAGE_NAME $REGISTRY/$IMAGE_NAME:${GITHUB_SHA::7}
