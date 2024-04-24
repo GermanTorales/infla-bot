@@ -56,9 +56,10 @@ jobs:
           script: |
             cd /home/app
 
-            echo $IMAGE_NAME
-            echo $REGISTRY
-            echo $GITHUB_SHA
+            # Print environment variables for debugging
+            echo "Registry: $REGISTRY"
+            echo "Image Name: $IMAGE_NAME"
+            echo "Tag: ${GITHUB_SHA::7}"
 
             # Login to registry using password-stdin for security
             echo "${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}" | docker login -u _json_key --password-stdin $REGISTRY
