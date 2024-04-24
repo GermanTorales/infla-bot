@@ -51,7 +51,7 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST}}
           username: ${{ secrets.DIGITALOCEAN_USERNAME}}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY}}
-          envs: IMAGE_NAME,REGISTRY, {{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GIT_SHA
+          envs: IMAGE_NAME,REGISTRY, {{ secrets.DIGITALOCEAN_ACCESS_TOKEN }},GITHUB_SHA
           script: |
             # Login to registry
             docker login -u ${{secrets.DIGITALOCEAN_ACCESS_TOKEN}} -p ${{secrets.DIGITALOCEAN_ACCESS_TOKEN}} $(echo $REGISTRY)
