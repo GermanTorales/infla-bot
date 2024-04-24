@@ -56,7 +56,6 @@ jobs:
           sudo apt install docker-ce
           sudo systemctl status docker
           sudo usermod -aG docker ${USER}
-          su - ${USER}
 
       - name: Deplot to DigitalOcean droplet via SSH action
         uses: appleboy/ssh-action@master
