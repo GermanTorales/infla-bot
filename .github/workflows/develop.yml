@@ -26,7 +26,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          platforms: linux/amd64
           file: Dockerfile
           push: true
           tags: andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
@@ -42,7 +41,7 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: ${{ secrets.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY }}
-          # envs: GITHUB_SHA,${{env.SHORT_SHA}},${{ secrets.NODE_PORT }},${{ secrets.MYSQL_HOST }},${{ secrets.MYSQL_PORT }},${{ secrets.MYSQL_USER }},${{ secrets.MYSQL_PASSWORD }},${{ secrets.MYSQL_DATABASE }}
+          envs: GITHUB_SHA,${{env.SHORT_SHA}}
           script: |
             docker pull andocodeando/infla-bot-dev:${GITHUB_SHA::7}
 
