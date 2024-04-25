@@ -36,7 +36,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: gtorales/infla-bot-dev:${{ env.SHORT_SHA }}
+          tags: andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
 
       - name: Delete .env file
         run: rm .env
@@ -54,10 +54,10 @@ jobs:
           key: ${{ secrets.DIGITALOCEAN_SSHKEY }}
           envs: GITHUB_SHA,${{env.SHORT_SHA}}
           script: |
-            docker pull gtorales/infla-bot-dev:${GITHUB_SHA::7}
+            docker pull andocodeando/infla-bot-dev:${GITHUB_SHA::7}
 
             docker stop app || true
 
             docker rm app || true
 
-            docker run -d --name app --restart on-failure gtorales/infla-bot-dev:${GITHUB_SHA::7}
+            docker run -d --name app --restart on-failure andocodeando/infla-bot-dev:${GITHUB_SHA::7}
