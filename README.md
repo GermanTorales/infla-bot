@@ -47,3 +47,7 @@ $ pnpm run start:dev
 # production mode
 $ pnpm run start:prod
 ```
+
+## Infra
+
+La API esta desplegada en [DigitalOcean](https://www.digitalocean.com/) a traves de GitHub actions.
