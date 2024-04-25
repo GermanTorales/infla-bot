@@ -1,5 +1,7 @@
 # Infla Bot
 
+[![Develop](https://github.com/GermanTorales/infla-bot/actions/workflows/develop.yml/badge.svg)](https://github.com/GermanTorales/infla-bot/actions/workflows/develop.yml)
+
 Este proyecto surgio como ejercicio para trabajar con `web scraping` y a la vez generar una herramienta de interes propio para medir el aumento de precios de distintas cadenas de supermercados en Argentina.
 
 ## Funcionamiento general
