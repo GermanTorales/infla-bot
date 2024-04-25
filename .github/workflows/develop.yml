@@ -13,6 +13,9 @@ jobs:
       - name: Checkout develop
         uses: actions/checkout@v2
 
+      - name: Set short SHA
+        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -33,7 +36,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: gtorales/infla-bot-dev:${GITHUB_SHA::7}
+          tags: gtorales/infla-bot-dev:${{ env.SHORT_SHA }}
 
       - name: Delete .env file
         run: rm .env
@@ -49,7 +52,7 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: ${{ secrets.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY }}
-          envs: GITHUB_SHA
+          envs: GITHUB_SHA,${{env.SHORT_SHA}}
           script: |
             docker pull gtorales/infla-bot-dev:${GITHUB_SHA::7}
 
