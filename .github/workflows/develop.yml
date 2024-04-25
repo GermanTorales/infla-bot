@@ -42,7 +42,8 @@ jobs:
           host: ${{ secrets.DIGITALOCEAN_HOST }}
           username: ${{ secrets.DIGITALOCEAN_USERNAME }}
           key: ${{ secrets.DIGITALOCEAN_SSHKEY }}
-          envs: GITHUB_SHA,${{env.SHORT_SHA}},${{ secrets.NODE_PORT }},${{ secrets.MYSQL_HOST }},${{ secrets.MYSQL_PORT }},${{ secrets.MYSQL_USER }},${{ secrets.MYSQL_PASSWORD }},${{ secrets.MYSQL_DATABASE }}
+          # envs: GITHUB_SHA,${{env.SHORT_SHA}},${{ secrets.NODE_PORT }},${{ secrets.MYSQL_HOST }},${{ secrets.MYSQL_PORT }},${{ secrets.MYSQL_USER }},${{ secrets.MYSQL_PASSWORD }},${{ secrets.MYSQL_DATABASE }}
+          envs: GITHUB_SHA,SHORT_SHA,NODE_PORT,MYSQL_HOST,MYSQL_PORT,MYSQL_USER,MYSQL_PASSWORD,MYSQL_DATABASE
           script: |
             docker pull andocodeando/infla-bot-dev:${GITHUB_SHA::7}
 
@@ -50,14 +51,26 @@ jobs:
 
             docker rm app || true
 
+            # docker run -d \
+            #   -e NODE_PORT=$NODE_PORT \
+            #   -e MYSQL_HOST=$MYSQL_HOST \
+            #   -e MYSQL_PORT=$MYSQL_PORT \
+            #   -e MYSQL_USER=$MYSQL_USER \
+            #   -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
+            #   -e MYSQL_DATABASE=$MYSQL_DATABASE \
+            #   -p $NODE_PORT:$NODE_PORT \
+            # --name app \
+            # --restart on-failure \
+            # andocodeando/infla-bot-dev:${GITHUB_SHA::7}
+
             docker run -d \
-              -e NODE_PORT=$NODE_PORT \
-              -e MYSQL_HOST=$MYSQL_HOST \
-              -e MYSQL_PORT=$MYSQL_PORT \
-              -e MYSQL_USER=$MYSQL_USER \
-              -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
-              -e MYSQL_DATABASE=$MYSQL_DATABASE \
-              -p $NODE_PORT:$NODE_PORT \
+              -e NODE_PORT=${NODE_PORT} \
+              -e MYSQL_HOST=${MYSQL_HOST} \
+              -e MYSQL_PORT=${MYSQL_PORT} \
+              -e MYSQL_USER=${MYSQL_USER} \
+              -e MYSQL_PASSWORD=${MYSQL_PASSWORD} \
+              -e MYSQL_DATABASE=${MYSQL_DATABASE} \
+              -p ${NODE_PORT}:${NODE_PORT} \
             --name app \
             --restart on-failure \
-            andocodeando/infla-bot-dev:${GITHUB_SHA::7}
+              andocodeando/infla-bot-dev:${GITHUB_SHA::7}
