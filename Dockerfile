@@ -22,6 +22,8 @@ COPY . "${APP_HOME}"
 RUN pnpm run build \
     && pnpm install --prod --frozen-lockfile
 
+RUN  npm run migrations:run
+
 #<-- RELEASE STAGE -->
 FROM environment AS release
 
