@@ -24,7 +24,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          rm .env || true
+          rm .env
           echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
           echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env
           echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
@@ -38,6 +38,12 @@ jobs:
           file: Dockerfile
           push: true
           tags: andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
+          build-args: |
+            MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            MYSQL_PORT=${{ secrets.MYSQL_PORT }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
 
       - name: Remove environment variables
         run: |
