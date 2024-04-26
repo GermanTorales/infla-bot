@@ -8,10 +8,10 @@ const config = new DataSource({
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  entities: ["src/domain/entites/**/*.entity{.ts,.js}"],
+  entities: ["dist/domain/entites/**/*.entity.js"],
   synchronize: false,
   migrationsRun: false,
-  migrations: ["migrations/**/*{.ts,.js}"],
+  migrations: ["dist/domain/entites/migrations/**/*.js"],
 });
 
 config

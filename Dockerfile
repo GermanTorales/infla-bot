@@ -32,4 +32,4 @@ COPY --from=build "${APP_HOME}/dist" "${APP_HOME}/dist"
 
 EXPOSE 3000
 
-CMD ["node", "./dist/main.js"]
+CMD ["sh", "-c", "pnpm run migration:run && pnpm run start:prod"]
