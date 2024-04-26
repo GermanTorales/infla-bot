@@ -27,6 +27,8 @@ FROM environment AS release
 
 COPY --from=build "${APP_HOME}/node_modules" "${APP_HOME}/node_modules"
 COPY --from=build "${APP_HOME}/dist" "${APP_HOME}/dist"
+COPY --from=build "${APP_HOME}/package.json" "${APP_HOME}/package.json"
+COPY --from=build "${APP_HOME}/pnpm-lock.yaml" "${APP_HOME}/pnpm-lock.yaml"
 
 EXPOSE 3000
 
