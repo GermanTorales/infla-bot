@@ -11,9 +11,9 @@ export const getTypeOrmModuleOptions = (config: EnvironmentConfigService): TypeO
     username: config.getDatabaseUser(),
     password: config.getDatabasePassword(),
     database: config.getDatabaseName(),
-    entities: ["src/domain/entities/**/*.entity{.ts,.js}"],
+    entities: ["dist/domain/entities/**/*.entity.js"],
     migrationsTableName: "migration",
-    migrations: ["migration/**/*.ts"],
+    migrations: ["dist/domain/entites/migration/**/*.js"],
     cli: {
       migrationsDir: "migration",
     },
