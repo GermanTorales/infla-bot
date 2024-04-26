@@ -14,12 +14,12 @@ COPY ["./package.json", "./pnpm-lock.yaml", "${APP_HOME}"]
 
 RUN pnpm install --frozen-lockfile
 
-RUN pnpm run migration:run
-
 #<-- BUILD STAGE -->
 FROM dependencies AS build
 
 COPY . "${APP_HOME}"
+
+RUN pnpm run migration:run
 
 RUN pnpm run build \
     && pnpm install --prod --frozen-lockfile
