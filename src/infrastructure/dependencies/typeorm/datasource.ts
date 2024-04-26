@@ -8,7 +8,7 @@ const config = new DataSource({
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  entities: [__dirname + "./../../../**/*.entity{.ts,.js}"],
+  entities: ["src/domain/entities/**/*.entity{.ts,.js}"],
   synchronize: false,
   migrationsRun: false,
   migrations: ["migrations/**/*{.ts,.js}"],
@@ -16,9 +16,11 @@ const config = new DataSource({
 
 config
   .initialize()
-  .then(() => {})
+  .then(() => {
+    console.log("Data source initialized successfully");
+  })
   .catch(err => {
-    console.log(err);
+    console.log("Datasurce error: ", err);
   });
 
 export default config;

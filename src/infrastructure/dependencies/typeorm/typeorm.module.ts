@@ -11,13 +11,11 @@ export const getTypeOrmModuleOptions = (config: EnvironmentConfigService): TypeO
     username: config.getDatabaseUser(),
     password: config.getDatabasePassword(),
     database: config.getDatabaseName(),
-    entities: [__dirname + "./../../../**/*.entity{.ts,.js}"],
-    autoLoadEntities: false,
-    synchronize: false,
-    migrationsRun: false,
-    migrations: [__dirname + "/migrations/**/*{.ts,.js}"],
+    entities: ["src/domain/entities/**/*.entity{.ts,.js}"],
+    migrationsTableName: "migration",
+    migrations: ["migration/**/*.ts"],
     cli: {
-      migrationsDir: "src/migrations",
+      migrationsDir: "migration",
     },
   }) as TypeOrmModuleOptions;
 @Module({
