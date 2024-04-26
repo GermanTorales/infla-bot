@@ -19,8 +19,6 @@ FROM dependencies AS build
 
 COPY . "${APP_HOME}"
 
-RUN pnpm run migration:run
-
 RUN pnpm run build \
     && pnpm install --prod --frozen-lockfile
 
