@@ -32,4 +32,4 @@ COPY --from=build "${APP_HOME}/pnpm-lock.yaml" "${APP_HOME}/pnpm-lock.yaml"
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "pnpm run migration:run && pnpm run start:prod"]
+CMD ["sh", "-c", "pnpm run migration:run && node dist/main.js"]
