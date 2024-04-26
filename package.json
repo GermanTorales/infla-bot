@@ -12,11 +12,11 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "typeorm_src": "typeorm-ts-node-commonjs -d src/infrastructure/dependencies/typeorm/typeorm.config.ts",
+    "typeorm_src": "typeorm-ts-node-commonjs -d dist/infrastructure/dependencies/typeorm/typeorm.config.js",
     "migrate": "ts-node node_modules/.bin/typeorm migration:run",
     "migration:create": "typeorm-ts-node-commonjs migration:create",
-    "migration:revert": "typeorm-ts-node-commonjs -d src/infrastructure/dependencies/typeorm/typeorm.config.ts migration:revert",
-    "migration:run": "typeorm-ts-node-commonjs -d src/infrastructure/dependencies/typeorm/typeorm.config.ts migration:run"
+    "migration:revert": "typeorm-ts-node-commonjs -d dist/infrastructure/dependencies/typeorm/typeorm.config.js migration:revert",
+    "migration:run": "typeorm-ts-node-commonjs -d dist/infrastructure/dependencies/typeorm/typeorm.config.js migration:run"
   },
   "dependencies": {
     "@nestjs/common": "10.0.0",
