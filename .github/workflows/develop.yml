@@ -51,6 +51,6 @@ jobs:
 
             docker rm app || true
 
-            docker rmi $CURRENT_IMAGE || true
-
             docker run -d --name app --restart on-failure -e NODE_PORT=${{secrets.NODE_PORT}} -e MYSQL_HOST=${{secrets.MYSQL_HOST}} -e MYSQL_PORT=${{secrets.MYSQL_PORT}} -e MYSQL_USER=${{secrets.MYSQL_USER}} -e MYSQL_PASSWORD=${{secrets.MYSQL_PASSWORD}} -e MYSQL_DATABASE=${{secrets.MYSQL_DATABASE}} -p ${{secrets.NODE_PORT}}:${{secrets.NODE_PORT}} andocodeando/infla-bot-dev:${GITHUB_SHA::7}
+
+            docker rmi $CURRENT_IMAGE || true
