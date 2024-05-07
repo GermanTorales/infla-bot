@@ -1,0 +1,35 @@
+name: Develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v2
+
+      - name: Set short SHA
+        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
+
+      - name: Deploy to Railway
+        run: |
+          curl -sL https://raw.githubusercontent.com/railwayapp/starters/master/deploy-scripts/railway.sh | bash -s -- --token ${{ secrets.RAILWAY_TOKEN }} --plugin docker -- -p infla-bot -s daring-creativity --image andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
