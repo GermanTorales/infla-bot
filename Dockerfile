@@ -28,4 +28,5 @@ COPY --from=build "${APP_HOME}/package.json" "${APP_HOME}/package.json"
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "pnpm run migration:run && node dist/main.js"]
+# CMD ["sh", "-c", "pnpm run migration:run && node dist/main.js"]
+CMD ["node", "dist/main.js"]
