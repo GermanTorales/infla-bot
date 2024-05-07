@@ -39,4 +39,4 @@ jobs:
       
       - name: Deploy to Railway
         run: |
-          railway up --projectName infla-bot --service daring-creativity
+          railway up --service daring-creativity
