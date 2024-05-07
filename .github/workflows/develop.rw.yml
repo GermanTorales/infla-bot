@@ -30,6 +30,11 @@ jobs:
           push: true
           tags: andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
 
+      - name: Install Railway CLI
+        run: |
+          curl -sL https://raw.githubusercontent.com/railwayapp/cli/main/install.sh | bash
+
       - name: Deploy to Railway
         run: |
-          curl -sL https://raw.githubusercontent.com/railwayapp/starters/master/deploy-scripts/railway.sh | bash -s -- --token ${{ secrets.RAILWAY_TOKEN }} --plugin docker -- -p infla-bot -s daring-creativity --image andocodeando/infla-bot-dev:${{ env.SHORT_SHA }}
+          railway login --apiKey ${{ secrets.RAILWAY_TOKEN }}
+          railway up --project infla-bot --service daring-creativity
