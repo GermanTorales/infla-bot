@@ -33,8 +33,10 @@ jobs:
       - name: Install Railway CLI
         run: |
           curl -sL https://raw.githubusercontent.com/railwayapp/cli/master/install.sh | bash
-
+      
+      - name: Set Railway Token
+        run: echo "RAILWAY_TOKEN=${{ secrets.RAILWAY_TOKEN }}" >> $GITHUB_ENV
+      
       - name: Deploy to Railway
         run: |
-          railway login --apiKey ${{ secrets.RAILWAY_TOKEN }}
-          railway up --project infla-bot --service daring-creativity
+          railway up --projectName infla-bot --service daring-creativity
